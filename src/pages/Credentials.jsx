@@ -14,7 +14,7 @@ const STORAGE_KEY = 'yad_credentials'
 const defaultCreds = {
   direct: { token: '', login: '' },
   metrika: { token: '', counterId: '' },
-  yandexgpt: { apiKey: '', folderId: '', enabled: true },
+  aistudio: { apiKey: '', folderId: '', model: 'yandexgpt-5-pro', enabled: true },
   gigachat: { clientId: '', clientSecret: '', enabled: false },
   claude: { apiKey: '', model: 'claude-sonnet-4-6', enabled: false },
 }
@@ -197,7 +197,7 @@ export default function Credentials() {
 
   const directConnected = creds.direct.token.length > 10
   const metrikaConnected = creds.metrika.token.length > 10 && creds.metrika.counterId.length > 2
-  const gptConnected = creds.yandexgpt.apiKey.length > 5 && creds.yandexgpt.folderId.length > 3
+  const gptConnected = creds.aistudio.apiKey.length > 5 && creds.aistudio.folderId.length > 3
   const gigaConnected = creds.gigachat.clientId.length > 3 && creds.gigachat.clientSecret.length > 5
   const claudeConnected = creds.claude.apiKey.length > 10
 
@@ -262,6 +262,7 @@ export default function Credentials() {
                 <div>
                   <label className="block text-xs text-[#888] mb-1.5">OAuth Токен</label>
                   <PasswordField
+                    id="direct-token"
                     value={creds.direct.token}
                     onChange={v => set('direct', 'token', v)}
                     placeholder="y0_AgAAAA..."
@@ -338,73 +339,149 @@ export default function Credentials() {
             title="Яндекс Wordstat"
             subtitle="Данные о частотности ключевых слов"
           >
-            <div className="pt-4">
-              <div className="bg-[#141414] rounded-xl p-4 flex items-start gap-3">
-                <div
-                  className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${directConnected ? 'bg-green-400' : 'bg-[#555]'}`}
-                />
-                <div>
-                  <p className="text-sm text-[#CCC]">
-                    Wordstat использует тот же OAuth-токен что и Яндекс.Директ
-                  </p>
-                  <p className="text-xs text-[#666] mt-1">
-                    {directConnected
-                      ? 'Токен Директа настроен — Wordstat доступен автоматически'
-                      : 'Настройте токен Директа выше для доступа к Wordstat'}
-                  </p>
-                  <div className="mt-3">
-                    <LinkBtn href="https://wordstat.yandex.ru">Открыть Wordstat</LinkBtn>
-                  </div>
+            <div className="pt-4 space-y-3">
+              <div className="bg-[#1A1A00] border border-[#FFD600]/20 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[#FFD600] text-xs font-bold uppercase tracking-wider">ℹ Отдельный токен не нужен</span>
                 </div>
+                <p className="text-sm text-[#BBB] leading-relaxed">
+                  Wordstat API работает через тот же OAuth-токен что и Яндекс.Директ —
+                  отдельно регистрировать ничего не нужно.
+                </p>
+              </div>
+
+              <div className="bg-[#141414] rounded-xl p-4 flex items-center gap-4">
+                <div className={`w-3 h-3 rounded-full flex-shrink-0 ${directConnected ? 'bg-green-400' : 'bg-red-500'}`} />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-[#CCC]">
+                    Токен Яндекс.Директ
+                  </p>
+                  <p className="text-xs text-[#666] mt-0.5">
+                    {directConnected
+                      ? `${creds.direct.token.slice(0, 8)}••••••••• — Wordstat доступен`
+                      : 'Не настроен — заполните секцию «Яндекс.Директ» выше'}
+                  </p>
+                </div>
+                {!directConnected && (
+                  <button
+                    onClick={() => document.getElementById('direct-token')?.focus()}
+                    className="text-xs text-[#FFD600] hover:underline flex-shrink-0"
+                  >
+                    Перейти ↑
+                  </button>
+                )}
+              </div>
+
+              <div className="flex gap-2">
+                <LinkBtn href="https://wordstat.yandex.ru">Открыть Wordstat ↗</LinkBtn>
+                <LinkBtn href="https://yandex.ru/dev/direct/doc/dg/reference/keywordsresearch-get.html">
+                  API документация ↗
+                </LinkBtn>
               </div>
             </div>
           </Section>
 
-          {/* 4. YandexGPT */}
+          {/* 4. Yandex AI Studio */}
           <Section
-            title="YandexGPT (Яндекс Облако)"
-            subtitle="Генерация объявлений и ИИ-анализ"
+            title="Yandex AI Studio"
+            subtitle="YandexGPT + YandexART — один ключ для всего"
             badge={<StatusBadge connected={gptConnected} />}
           >
             <div className="pt-4 space-y-4">
+
+              {/* Инфо-баннер про цены */}
+              <div className="bg-[#1A1A00] border border-[#FFD600]/20 rounded-xl p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-[#FFD600] text-xs font-bold uppercase tracking-wider">💰 Стоимость</span>
+                </div>
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div className="bg-[#111100] rounded-lg p-3">
+                    <div className="text-[#FFD600] font-bold text-base">0.40 ₽</div>
+                    <div className="text-[#888] mt-0.5">за 1 000 токенов</div>
+                    <div className="text-[#555] mt-1">YandexGPT 5.1 Pro</div>
+                  </div>
+                  <div className="bg-[#111100] rounded-lg p-3">
+                    <div className="text-[#FFD600] font-bold text-base">500–1 000 ₽</div>
+                    <div className="text-[#888] mt-0.5">хватит надолго</div>
+                    <div className="text-[#555] mt-1">для личного использования</div>
+                  </div>
+                </div>
+                <p className="text-xs text-[#666]">
+                  Один API-ключ покрывает YandexGPT (тексты) и YandexART (изображения для РСЯ).
+                </p>
+              </div>
+
               <div className="flex items-center justify-between py-1">
-                <span className="text-sm text-[#CCC]">Включить YandexGPT</span>
+                <span className="text-sm text-[#CCC]">Включить Yandex AI Studio</span>
                 <Toggle
-                  checked={creds.yandexgpt.enabled}
-                  onChange={v => set('yandexgpt', 'enabled', v)}
+                  checked={creds.aistudio.enabled}
+                  onChange={v => set('aistudio', 'enabled', v)}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-[#888] mb-1.5">API-ключ</label>
+                  <label className="block text-xs text-[#888] mb-1.5">API-ключ сервисного аккаунта</label>
                   <PasswordField
-                    value={creds.yandexgpt.apiKey}
-                    onChange={v => set('yandexgpt', 'apiKey', v)}
+                    value={creds.aistudio.apiKey}
+                    onChange={v => set('aistudio', 'apiKey', v)}
                     placeholder="AQVN..."
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-[#888] mb-1.5">Folder ID</label>
+                  <label className="block text-xs text-[#888] mb-1.5">Folder ID (ID каталога)</label>
                   <TextField
-                    value={creds.yandexgpt.folderId}
-                    onChange={v => set('yandexgpt', 'folderId', v)}
+                    value={creds.aistudio.folderId}
+                    onChange={v => set('aistudio', 'folderId', v)}
                     placeholder="b1gxxxxxxxxxxxxxxx"
                   />
                 </div>
               </div>
 
+              {/* Выбор модели */}
+              <div>
+                <label className="block text-xs text-[#888] mb-2">Модель по умолчанию</label>
+                <div className="flex gap-2 flex-wrap">
+                  {[
+                    { val: 'yandexgpt-5-pro', label: 'YandexGPT 5.1 Pro', desc: '0.40 ₽/1к токенов', recommended: true },
+                    { val: 'yandexgpt-5-lite', label: 'YandexGPT 5 Lite', desc: 'Быстрее, дешевле' },
+                    { val: 'yandexgpt-5', label: 'Alice AI LLM', desc: 'Лучший диалог' },
+                  ].map(m => (
+                    <button
+                      key={m.val}
+                      type="button"
+                      onClick={() => set('aistudio', 'model', m.val)}
+                      className={`px-3 py-2 rounded-xl border text-xs text-left transition-all relative ${
+                        creds.aistudio.model === m.val
+                          ? 'border-[#FFD600] bg-[#FFD600]/10 text-[#FFD600]'
+                          : 'border-[#333] text-[#888] hover:border-[#555]'
+                      }`}
+                    >
+                      {m.recommended && (
+                        <span className="absolute -top-1.5 -right-1.5 text-[9px] bg-[#FFD600] text-black font-bold px-1 rounded">
+                          РЕК
+                        </span>
+                      )}
+                      <div className="font-medium">{m.label}</div>
+                      <div className="text-[10px] opacity-70 mt-0.5">{m.desc}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="bg-[#141414] rounded-xl p-4">
-                <p className="text-xs text-[#666] font-medium mb-2">Как настроить:</p>
+                <p className="text-xs text-[#666] font-medium mb-3">Как настроить (5 шагов):</p>
                 <Instructions steps={[
-                  'Зарегистрируйтесь в Яндекс Облаке: cloud.yandex.ru',
-                  'Создайте сервисный аккаунт в разделе IAM',
-                  'Выдайте роль: ai.languageModels.user',
-                  'Создайте API-ключ для сервисного аккаунта',
-                  'Скопируйте Folder ID из настроек облака',
+                  'Зарегистрируйтесь и пополните баланс на cloud.yandex.ru (от 500 ₽)',
+                  'Создайте каталог (Folder) — запишите Folder ID',
+                  'В разделе IAM создайте сервисный аккаунт',
+                  'Выдайте роли: ai.languageModels.user + ai.imageGeneration.user',
+                  'Создайте API-ключ для аккаунта → скопируйте сюда',
                 ]} />
-                <div className="mt-4">
-                  <LinkBtn href="https://cloud.yandex.ru">Открыть Яндекс Облако</LinkBtn>
+                <div className="mt-4 flex gap-2 flex-wrap">
+                  <LinkBtn href="https://cloud.yandex.ru">Яндекс Облако ↗</LinkBtn>
+                  <LinkBtn href="https://aistudio.yandex.ru">AI Studio ↗</LinkBtn>
+                  <LinkBtn href="https://yandex.cloud/ru/docs/ai-studio/pricing">Тарифы ↗</LinkBtn>
                 </div>
               </div>
             </div>
