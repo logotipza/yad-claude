@@ -1,22 +1,33 @@
 // Верхняя тёмная навигационная панель
-import { Bell } from 'lucide-react'
+import { Bell, Menu } from 'lucide-react'
 import { motion } from 'framer-motion'
 
-export default function Navbar() {
+export default function Navbar({ onMenuClick }) {
   return (
     <header
       style={{ backgroundColor: '#111111' }}
       className="h-14 flex items-center justify-between px-6 flex-shrink-0"
     >
-      {/* Логотип */}
-      <div className="flex items-center gap-2">
-        <div
-          className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-sm"
-          style={{ backgroundColor: '#FFD600', color: '#111111' }}
+      {/* Левая часть: гамбургер (мобайл) + логотип */}
+      <div className="flex items-center gap-3">
+        {/* Гамбургер — только на мобайле */}
+        <button
+          onClick={onMenuClick}
+          className="md:hidden text-gray-400 hover:text-white transition-colors p-1 -ml-1"
+          aria-label="Открыть меню"
         >
-          Я
+          <Menu size={22} />
+        </button>
+
+        <div className="flex items-center gap-2">
+          <div
+            className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-sm"
+            style={{ backgroundColor: '#FFD600', color: '#111111' }}
+          >
+            Я
+          </div>
+          <span className="text-white font-semibold text-sm tracking-tight hidden sm:block">ЯД Оптимизатор</span>
         </div>
-        <span className="text-white font-semibold text-sm tracking-tight">ЯД Оптимизатор</span>
       </div>
 
       {/* Правая часть */}

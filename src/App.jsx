@@ -10,12 +10,14 @@ import Layout from './components/Layout'
 import Welcome from './pages/Welcome'
 import OAuthCallback from './pages/OAuthCallback'
 import Analyzing from './pages/Analyzing'
+import Credentials from './pages/Credentials'
 
 // Страницы с лейаутом (сайдбар + навбар)
 import Dashboard from './pages/Dashboard'
 import Results from './pages/Results'
 import CampaignDetail from './pages/CampaignDetail'
 import CampaignCreate from './pages/CampaignCreate'
+import AddSite from './pages/AddSite'
 import WeeklyReport from './pages/WeeklyReport'
 import Hypotheses from './pages/Hypotheses'
 import Settings from './pages/Settings'
@@ -43,12 +45,14 @@ export default function App() {
           <Route path="/" element={<Welcome />} />
           <Route path="/auth" element={<OAuthCallback />} />
           <Route path="/analyzing" element={<Analyzing />} />
+          <Route path="/credentials" element={<Credentials />} />
 
           {/* Страницы с лейаутом */}
           <Route path="/dashboard" element={<WithLayout><Dashboard /></WithLayout>} />
           <Route path="/results" element={<WithLayout><Results /></WithLayout>} />
           <Route path="/campaign/create" element={<WithLayout><CampaignCreate /></WithLayout>} />
           <Route path="/campaign/:id" element={<WithLayout><CampaignDetail /></WithLayout>} />
+          <Route path="/add-site" element={<WithLayout><AddSite /></WithLayout>} />
           <Route path="/report" element={<WithLayout><WeeklyReport /></WithLayout>} />
           <Route path="/hypotheses" element={<WithLayout><Hypotheses /></WithLayout>} />
           <Route path="/settings" element={<WithLayout><Settings /></WithLayout>} />
